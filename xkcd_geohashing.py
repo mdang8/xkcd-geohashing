@@ -72,22 +72,44 @@ def get_destination(location, decimals):
     dest_coords = []
 
     # floors the coordinates to get the integer portions
-    location_int_lat = math.floor(location[0])
-    location_int_lng = math.floor(location[1])
+    location_int_lat = int(location[0])
+    location_int_lng = int(location[1])
 
-    dest_coords.append(location_int_lat + decimals[0])
-    dest_coords.append(location_int_lng + decimals[1])
+    dest_coords.append(str(location_int_lat) + str(decimals[0])[1:])
+    dest_coords.append(str(location_int_lng) + str(decimals[1])[1:])
 
     return dest_coords
+
+
+## tests using the coordinates given in the actual comic
+def test():
+    string = "2005-05-26-10458.68"
+    coordinates = [37.421542, -122.085589]
+    md5_sum = get_MD5_sum(string)
+    md5_halves = split_md5_sum(md5_sum)
+    decimal_halves = convert_halves_decimal(md5_halves)
+    dest_coords = get_destination(coordinates, decimal_halves)
+
+    results = []
+
+    for coord in dest_coords:
+        coord = round(float(coord), 6)
+        results.append(coord)
+
+    if results[0] != 37.857713 or results[1] != -122.544543:
+        print results
+        raise ValueError("There's an error. The test case failed.")
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         raise ValueError("Invalid number of arguments. You must pass ONE argument.")
     else:
+        test()
         md5_sum = get_MD5_sum(sys.argv[1])
         md5_halves = split_md5_sum(md5_sum)
         decimal_halves = convert_halves_decimal(md5_halves)
         coordinates = get_coords_city(sys.argv[2])
+        #coordinates = [42.39561, -71.13051]
         dest_coords = get_destination(coordinates, decimal_halves)
         print 'Destination Coordinates: (' + str(dest_coords[0]) + ', ' + str(dest_coords[1]) + ')'
